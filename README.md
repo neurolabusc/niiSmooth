@@ -44,13 +44,14 @@ Here is the time to convert a 345mb resting state dataset (90x90x50x427 16-bit) 
 | Tool | Time (.nii) | Time (.nii.gz) |
 | --- | --- | --- |
 | AFNI<sup>1</sup> | 1.5 | 24.3 | 
-| niiSmooth<sup>2</sup> | 2.3 | 3.6 | 
+| niiSmooth<sup>2</sup> | 2.3 | 3.6<sup>3</sup> | 
 | c4d | 16.7 | 40.0 |
 | FSL | 20.0 | 44.3 |
 | SPM12 | 22.2 | - |
 
 1. By default, AFNI uses a smaller, faster, and less precise kernel width (AFNI_BLUR_FIRFAC) than other methods. AFNI uses parallel pigz for compressing for BRIK.GZ (3.1s) but not .nii.gz (24.3s).
 2. niiSmooth requires 7.3s to create uncompressed .nii in single-threaded mode
+3. niiSmooth (and AFNI when creating BRIK.GZ) can use pigz to accelerate compression. These times are with the default version of pigz, and compression will be accelerated a futuer 40% if the user installs an [optimized version of pigz](https://github.com/neurolabusc/pigz/releases/tag/v2.4.cf). 
 
 ```
 //High performance smoothing
@@ -67,7 +68,7 @@ time 3dmerge -1blur_fwhm 6.0 -doall -prefix afni.nii rest.nii
 time 3dmerge -1blur_fwhm 6.0 -doall -prefix afni.nii.gz rest.nii
 time 3dmerge -1blur_fwhm 6.0 -doall -prefix afni.brik.gz rest.nii
 //next command from Matlab
-tic; spm_smoo\th('rest.nii','spm.nii',6); toc
+tic; spm_smooth('rest.nii','spm.nii',6); toc
 ```
 
 ## Compiling
